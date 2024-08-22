@@ -1,0 +1,135 @@
+﻿@page "/weather"
+@inject HttpClient Http
+@using BlazorApp2.Models
+@using Telerik.Blazor
+@using Telerik.Blazor.Components
+@using Telerik.SvgIcons
+@using Telerik.FontIcons
+
+@* <TelerikAvatar Type="AvatarType.Image">
+
+    <img src="https://demos.telerik.com/blazor-ui/images/panelbar/robert.jpg" />
+
+</TelerikAvatar>
+
+<TelerikAvatar Type="AvatarType.Text">
+    JD
+</TelerikAvatar>
+ *@
+
+
+@* <div style="float:left; margin: 50px; ">
+    <TelerikButton Rounded="rounded" ThemeColor="Success"> Prueba </TelerikButton>
+    </div> *@
+
+
+<TelerikButton ThemeColor="@ThemeConstants.Button.ThemeColor.Primary">Say Hello</TelerikButton>
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather</h1>
+
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Lugar</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var respuesta in Heroes)
+            {
+               
+                <tr>
+                    <th>@respuesta.Name</th>
+                    <th>@respuesta.LastName</th>
+                    <th>@respuesta.Place</th>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <TelerikGrid Data="Heroes" Pageable="true"
+                 Sortable="true">
+     @*    @foreach (var respuesta in Heroes)
+        { *@
+            <GridColumns>
+                <GridColumn Width="280px"  Field="Name">
+                </GridColumn>
+                <GridColumn Width="280px"  Field="LastName">
+                </GridColumn>
+                <GridColumn Width="280px" Field="Place">
+                </GridColumn>
+            </GridColumns>
+        @* } *@
+    </TelerikGrid>
+
+   @*  <Telerik.Blazor.Components.TelerikGrid Data="Heroes">
+        <GridColumns>
+            <Telerik.Blazor.Components.GridColumn Field="P1" Title="Prueba Uno"></Telerik.Blazor.Components.GridColumn>
+            <Telerik.Blazor.Components.GridColumn Field="P2" Title="Prueba Dos"></Telerik.Blazor.Components.GridColumn>
+            <Telerik.Blazor.Components.GridColumn Field="P3" Title="Prueba Tres"></Telerik.Blazor.Components.GridColumn>
+    
+        </GridColumns>
+    </Telerik.Blazor.Components.TelerikGrid> *@
+@* 
+    <TelerikGrid Data="@forecasts" Height="550">
+        <GridColumns>
+             <GridColumn Field="Temperature C" Title="Temperature C">
+
+            </GridColumn>
+        </GridColumns>
+    </TelerikGrid> *@
+
+}
+
+@code {
+    private WeatherForecast[]? forecasts;
+
+    public static List<Heroes> Heroes = new List<Heroes>();
+
+    async Task Listado()
+    {
+        var respuesta = await Http.GetFromJsonAsync<List<Heroes>>("http://localhost:5283/api/SuperHero");
+        Heroes = respuesta;
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+        await Listado();
+    }
+
+
+    public class WeatherForecast
+    {
+        public DateOnly Date { get; set; }
+
+        public int TemperatureC { get; set; }
+
+        public string? Summary { get; set; }
+
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+}
+
+
+<style>
+    .width-100 {
+        width: 100%;
+    }
+
+    .grid .k-grid-content tr {
+        line-height: 32px;
+    }
+</style>
